@@ -1,11 +1,14 @@
 const { constants } = require('http2');
 const Movie = require('../models/movie');
+const ForbiddenError = require('../errors/ForbiddenError');
+const NotFoundError = require('../errors/NotFoundError');
+const ServerError = require('../errors/ServerError');
 
 const checkMovieOwnerAndRemove = (movie, userId) => {
   if (movie.owner.toString() === userId) {
     movie.remove();
   } else {
-    // throw new ForbiddenError('Вы не можете удалять чужие карточки');
+    throw new ForbiddenError('Вы не можете удалять чужие фильмы');
   }
 };
 
@@ -16,7 +19,7 @@ const getMovies = (req, res, next) => {
       res.status(constants.HTTP_STATUS_OK).send(movies);
     })
     .catch(() => {
-      next(new Error(1));
+      next(new ServerError('Произошла неизвестная ошибка'));
     });
 };
 
@@ -30,11 +33,12 @@ const addMovie = (req, res, next) => {
     image,
     trailerLink,
     thumbnail,
-    owner,
     movieId,
     nameRU,
     nameEN,
   } = req.body;
+
+  const owner = req.user._id;
 
   Movie.create({
     country,
@@ -54,14 +58,14 @@ const addMovie = (req, res, next) => {
 
 const deleteMovie = (req, res, next) => {
   const movieId = req.params.id;
-  const owner = req.user;
+  const owner = req.user._id;
 
   Movie.findById(movieId)
     .then((movie) => {
       checkMovieOwnerAndRemove(movie, owner);
       res.status(constants.HTTP_STATUS_OK).send(movie);
     })
-    .catch(() => { next(new Error('1')); });
+    .catch(() => next(new NotFoundError('Фильм по указанному ID не найден')));
 };
 
 module.exports = { getMovies, addMovie, deleteMovie };
