@@ -1,6 +1,7 @@
 const usersRouter = require('express').Router();
-const { getUser } = require('../../../../123/react-mesto-api-full/backend/controllers/users');
+const { getUser, patchUser } = require('../controllers/users');
 
 usersRouter.get('/me', getUser);
+usersRouter.patch('/me', patchUser);
 
 module.exports = { usersRouter };
