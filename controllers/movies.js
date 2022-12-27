@@ -3,6 +3,7 @@ const Movie = require('../models/movie');
 const ForbiddenError = require('../errors/ForbiddenError');
 const NotFoundError = require('../errors/NotFoundError');
 const ServerError = require('../errors/ServerError');
+const BadRequestError = require('../errors/BadRequestError');
 
 const checkMovieOwnerAndRemove = (movie, userId) => {
   if (movie.owner.toString() === userId) {
@@ -13,8 +14,7 @@ const checkMovieOwnerAndRemove = (movie, userId) => {
 };
 
 const getMovies = (req, res, next) => {
-  Movie
-    .find({})
+  Movie.find({})
     .then((movies) => {
       res.status(constants.HTTP_STATUS_OK).send(movies);
     })
@@ -53,7 +53,15 @@ const addMovie = (req, res, next) => {
     movieId,
     nameRU,
     nameEN,
-  }).then((movie) => res.send(movie)).catch(() => next(new Error(1)));
+  })
+    .then((movie) => res.send(movie))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Введённые данные некорретны'));
+      } else {
+        next(new ServerError('Произошла неизвестная ошибка'));
+      }
+    });
 };
 
 const deleteMovie = (req, res, next) => {
@@ -62,10 +70,13 @@ const deleteMovie = (req, res, next) => {
 
   Movie.findById(movieId)
     .then((movie) => {
+      if (!movie) {
+        throw new NotFoundError('Фильм по указанному ID не найден');
+      }
       checkMovieOwnerAndRemove(movie, owner);
       res.status(constants.HTTP_STATUS_OK).send(movie);
     })
-    .catch(() => next(new NotFoundError('Фильм по указанному ID не найден')));
+    .catch((err) => next(err));
 };
 
 module.exports = { getMovies, addMovie, deleteMovie };
