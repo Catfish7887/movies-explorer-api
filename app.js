@@ -12,21 +12,22 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 mongoose.set('strictQuery', true);
-mongoose.connect(process.env.DB_URL);
+mongoose.connect(process.env.DB_URL ? process.env.DB_URL : 'mongodb://localhost:27017/films');
 
 app.use(helmet());
 app.use(cors());
 app.use(bodyParser.json());
 
 app.use(requestLogger);
-// Роутинг. Чтобы не грузить app.js, вынес роуты в отдельные файлы
+
+// Роутинг
 app.use(appRouter);
 
 app.use(errorLogger);
 
+// Централизованный обработчик ошибок
 app.use(errors());
 
-// Централизованный обработчик ошибок
 app.use(errorsHandler);
 
-app.listen(process.env.PORT);
+app.listen(process.env.PORT ? process.env.PORT : 3000);

@@ -15,10 +15,9 @@ const getUser = (req, res, next) => {
 };
 
 const patchUser = (req, res, next) => {
-  const id = req.user;
+  const id = req.user._id;
   const { name, email } = req.body;
-
-  User.findByIdAndUpdate(id, { name, email }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(id, { name, email }, { runValidators: true })
     .then((user) => res.status(constants.HTTP_STATUS_OK).send(user))
     .catch(() => next(new NotFoundError('Пользователь не найден')));
 };
