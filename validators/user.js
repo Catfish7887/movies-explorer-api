@@ -3,15 +3,15 @@ const { Joi, Segments } = require('celebrate');
 const { celebrate } = require('./utils');
 
 const passwordSchema = Joi.string().required();
-const emailSchema = Joi.string().email().required();
+const emailSchema = Joi.string().email();
 
 const joiAuthSchema = Joi.object({
-  email: emailSchema,
+  email: emailSchema.required(),
   password: passwordSchema,
 });
 
 const joiUserSchema = Joi.object({
-  name: Joi.string().required().min(2),
+  name: Joi.string().min(2),
   email: emailSchema,
 });
 

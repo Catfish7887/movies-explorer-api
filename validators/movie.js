@@ -18,7 +18,7 @@ const joiMovieSchema = Joi.object({
 });
 
 const joiSchemaId = Joi.object({
-  Id: schemaObjectId.required(),
+  id: schemaObjectId.required(),
 });
 
 const movieSegment = { [Segments.BODY]: joiMovieSchema };
