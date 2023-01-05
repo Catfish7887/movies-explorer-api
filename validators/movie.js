@@ -11,7 +11,7 @@ const joiMovieSchema = Joi.object({
   image: schemaURL.required(),
   trailerLink: schemaURL.required(),
   thumbnail: schemaURL.required(),
-  movieId: Joi.string().required(),
+  movieId: Joi.number().required(),
   nameRU: Joi.string().required(),
   nameEN: Joi.string().required(),
 

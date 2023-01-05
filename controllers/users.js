@@ -5,13 +5,14 @@ const User = require('../models/user');
 const ConflictError = require('../errors/ConflictError');
 const ServerError = require('../errors/ServerError');
 const NotFoundError = require('../errors/NotFoundError');
+const { usersErrorMessages, serverErrorMessage } = require('../utils/errorMessages');
 
 const getUser = (req, res, next) => {
   const { _id } = req.user;
 
   User.find({ _id })
     .then((user) => res.status(constants.HTTP_STATUS_OK).send(user))
-    .catch(() => next(new NotFoundError('Пользователь не найден')));
+    .catch(() => next(new NotFoundError(usersErrorMessages.notFoundMessage)));
 };
 
 const patchUser = (req, res, next) => {
@@ -19,7 +20,7 @@ const patchUser = (req, res, next) => {
   const { name, email } = req.body;
   User.findByIdAndUpdate(id, { name, email }, { runValidators: true })
     .then((user) => res.status(constants.HTTP_STATUS_OK).send(user))
-    .catch(() => next(new NotFoundError('Пользователь не найден')));
+    .catch(() => next(new NotFoundError(usersErrorMessages.notFoundMessage)));
 };
 
 const createUser = (req, res, next) => {
@@ -37,9 +38,9 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictError('Пользователь с таким Email уже зарегистрирован'));
+        next(new ConflictError(usersErrorMessages.conflictMessage));
       } else {
-        next(new ServerError('Произошла неизвестная ошибка'));
+        next(new ServerError(serverErrorMessage));
       }
     });
 };

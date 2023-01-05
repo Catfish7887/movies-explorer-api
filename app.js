@@ -13,14 +13,14 @@ const rateLimiter = require('./middlewares/other');
 
 const app = express();
 mongoose.set('strictQuery', true);
-mongoose.connect(process.env.NODE_ENV === 'production' ? process.env.DB_URL : 'mongodb://localhost:27017/moviesdb');
+mongoose.connect(process.env.NODE_ENV === 'production' ? process.env.DB_URL : 'mongodb://localhost:27017/bitfilmsdb');
+
+app.use(requestLogger);
 
 app.use(rateLimiter);
 app.use(helmet());
 app.use(cors());
 app.use(bodyParser.json());
-
-app.use(requestLogger);
 
 // Роутинг
 app.use(appRouter);

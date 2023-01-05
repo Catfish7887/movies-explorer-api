@@ -4,12 +4,13 @@ const ForbiddenError = require('../errors/ForbiddenError');
 const NotFoundError = require('../errors/NotFoundError');
 const ServerError = require('../errors/ServerError');
 const BadRequestError = require('../errors/BadRequestError');
+const { moviesErrorMessages, serverErrorMessage } = require('../utils/errorMessages');
 
 const checkMovieOwnerAndRemove = (movie, userId) => {
   if (movie.owner.toString() === userId) {
     movie.remove();
   } else {
-    throw new ForbiddenError('Вы не можете удалять чужие фильмы');
+    throw new ForbiddenError(moviesErrorMessages.forbiddenMessage);
   }
 };
 
@@ -19,7 +20,7 @@ const getMovies = (req, res, next) => {
       res.status(constants.HTTP_STATUS_OK).send(movies);
     })
     .catch(() => {
-      next(new ServerError('Произошла неизвестная ошибка'));
+      next(new ServerError(serverErrorMessage));
     });
 };
 
@@ -57,9 +58,9 @@ const addMovie = (req, res, next) => {
     .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Введённые данные некорретны'));
+        next(new BadRequestError(moviesErrorMessages.badRequestMessage));
       } else {
-        next(new ServerError('Произошла неизвестная ошибка'));
+        next(new ServerError(serverErrorMessage));
       }
     });
 };
@@ -71,7 +72,7 @@ const deleteMovie = (req, res, next) => {
   Movie.findById(movieId)
     .then((movie) => {
       if (!movie) {
-        throw new NotFoundError('Фильм по указанному ID не найден');
+        throw new NotFoundError(moviesErrorMessages.notFoundMessage);
       }
       checkMovieOwnerAndRemove(movie, owner);
       res.status(constants.HTTP_STATUS_OK).send(movie);
