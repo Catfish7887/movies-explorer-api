@@ -1,0 +1,11 @@
+const rateLimit = require('express-rate-limit');
+
+const rateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // Один час
+  max: 300,
+  message: 'С Вашего IP-адреса поступило слишком много запросов. Повторите попытку позже',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+module.exports = rateLimiter;
