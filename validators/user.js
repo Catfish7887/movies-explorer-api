@@ -11,7 +11,7 @@ const joiAuthSchema = Joi.object({
 });
 
 const joiUserSchema = Joi.object({
-  name: Joi.string().min(2),
+  name: Joi.string().min(2).required(),
   email: emailSchema,
 });
 
