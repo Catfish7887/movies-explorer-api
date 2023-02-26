@@ -10,7 +10,7 @@ const { usersErrorMessages, serverErrorMessage } = require('../utils/errorMessag
 const getUser = (req, res, next) => {
   const { _id } = req.user;
 
-  User.find({ _id })
+  User.findOne({ _id })
     .then((user) => res.status(constants.HTTP_STATUS_OK).send(user))
     .catch(() => next(new NotFoundError(usersErrorMessages.notFoundMessage)));
 };
