@@ -54,7 +54,7 @@ const addMovie = (req, res, next) => {
     movieId,
     nameRU,
     nameEN,
-  })
+  }, { unique: true, runValidators: true })
     .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
