@@ -69,7 +69,7 @@ const deleteMovie = (req, res, next) => {
   const movieId = req.params.id;
   const owner = req.user._id;
 
-  Movie.findById(movieId)
+  Movie.findOne({ movieId })
     .then((movie) => {
       if (!movie) {
         throw new NotFoundError(moviesErrorMessages.notFoundMessage);
@@ -80,4 +80,15 @@ const deleteMovie = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-module.exports = { getMovies, addMovie, deleteMovie };
+const deleteAll = (req, res, next) => {
+  Movie.find({})
+    .then((movies) => {
+      movies.forEach((movie) => movie.remove());
+      res.send('ok');
+    })
+    .catch((err) => next(err));
+};
+
+module.exports = {
+  getMovies, addMovie, deleteMovie, deleteAll,
+};
