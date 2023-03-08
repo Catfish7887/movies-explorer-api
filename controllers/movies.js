@@ -57,6 +57,7 @@ const addMovie = (req, res, next) => {
   })
     .then((movie) => res.send(movie))
     .catch((err) => {
+      res.send(err);
       if (err.name === 'ValidationError') {
         next(new BadRequestError(moviesErrorMessages.badRequestMessage));
       } else {
