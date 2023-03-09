@@ -57,6 +57,7 @@ const addMovie = (req, res, next) => {
   })
     .then((movie) => res.send(movie))
     .catch((err) => {
+      res.send(err);
       if (err.name === 'ValidationError') {
         next(new BadRequestError(moviesErrorMessages.badRequestMessage));
       } else {
@@ -80,4 +81,15 @@ const deleteMovie = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-module.exports = { getMovies, addMovie, deleteMovie };
+const deleteAll = (req, res, next) => {
+  Movie.find({})
+    .then((movies) => {
+      movies.forEach((movie) => movie.remove());
+      res.send('ok');
+    })
+    .catch((err) => next(err));
+};
+
+module.exports = {
+  getMovies, addMovie, deleteMovie, deleteAll,
+};
